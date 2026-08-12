@@ -1,0 +1,51 @@
+version: 2.1
+
+jobs:
+  checks:
+    docker:
+      - image: cimg/node:22.12
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Lint
+          command: npm run lint
+      - run:
+          name: Typecheck
+          command: npx tsc --noEmit
+
+  build:
+    docker:
+      - image: cimg/node:22.12
+    steps:
+      - checkout
+      - run:
+          name: Set version from tag
+          command: |
+            [ -z "$CIRCLE_TAG" ] && { echo "Not a tag — skipping version bump."; exit 0; }
+            VERSION="${CIRCLE_TAG#v}"
+            sed -i "s/\"version\": \"[0-9.]*\"/\"version\": \"$VERSION\"/" app.json
+            echo "Version set to $VERSION"
+      - run:
+          name: Install dependencies
+          command: npm ci
+      - run:
+          name: Build with EAS
+          command: npx eas-cli@latest build --platform all --profile production --non-interactive --wait
+          no_output_timeout: 30m
+
+workflows:
+  checks:
+    jobs:
+      - checks
+
+  build:
+    jobs:
+      - build:
+          filters:
+            tags:
+              only: /^v.*/
+            branches:
+              ignore: /.*/
