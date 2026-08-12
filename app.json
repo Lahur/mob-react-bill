@@ -2,13 +2,16 @@
   "expo": {
     "name": "Tehnomodus administracija",
     "slug": "tehnomodus-bill",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "mobreactbill",
     "userInterfaceStyle": "automatic",
     "ios": {
-      "bundleIdentifier": "com.tehnomodus.mobreactbill"
+      "bundleIdentifier": "com.tehnomodus.mobreactbill",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "com.tehnomodus.mobreactbill",

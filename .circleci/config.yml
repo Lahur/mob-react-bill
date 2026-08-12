@@ -33,7 +33,7 @@ jobs:
           command: npm ci
       - run:
           name: Build with EAS
-          command: npx eas-cli@latest build --platform all --profile production --non-interactive --wait
+          command: npx eas-cli@latest build --platform android --profile production --non-interactive --wait
           no_output_timeout: 30m
 
 workflows:
