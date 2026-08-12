@@ -33,8 +33,42 @@ jobs:
           command: npm ci
       - run:
           name: Build with EAS
-          command: npx eas-cli@latest build --platform android --profile production --non-interactive --wait
+          command: npx eas-cli@latest build --platform android --profile production --non-interactive --wait --json > eas-build.json
           no_output_timeout: 30m
+      - run:
+          name: Download AAB
+          command: |
+            BUILD_URL=$(node -e "console.log(JSON.parse(require('fs').readFileSync('eas-build.json','utf8'))[0].artifacts.buildUrl)")
+            echo "Downloading AAB from $BUILD_URL"
+            curl -fSL -o app.aab "$BUILD_URL"
+      - run:
+          name: Convert AAB to universal APK
+          command: |
+            sudo apt-get update && sudo apt-get install -y default-jre-headless unzip
+            curl -fSL -o bundletool.jar https://github.com/google/bundletool/releases/download/1.18.3/bundletool-all-1.18.3.jar
+            echo "$KEYSTORE_BASE64" | base64 -d > release.keystore
+            java -jar bundletool.jar build-apks \
+              --bundle=app.aab \
+              --output=app.apks \
+              --mode=universal \
+              --ks=release.keystore \
+              --ks-pass=pass:"$STORE_PASSWORD" \
+              --ks-key-alias="$KEY_ALIAS" \
+              --key-pass=pass:"$KEY_PASSWORD"
+            unzip -p app.apks universal.apk > "tehnomodus-bill-${CIRCLE_TAG}.apk"
+            rm -f release.keystore app.apks
+      - run:
+          name: Upload APK to GitHub Release
+          command: |
+            if ! command -v gh &> /dev/null; then
+              curl -fSL https://github.com/cli/cli/releases/download/v2.97.0/gh_2.97.0_linux_amd64.tar.gz -o gh.tar.gz
+              tar -xzf gh.tar.gz
+              sudo mv gh_2.97.0_linux_amd64/bin/gh /usr/local/bin/gh
+            fi
+            REPO="$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME"
+            gh release view "$CIRCLE_TAG" --repo "$REPO" \
+              || gh release create "$CIRCLE_TAG" --repo "$REPO" --title "$CIRCLE_TAG" --generate-notes
+            gh release upload "$CIRCLE_TAG" "tehnomodus-bill-${CIRCLE_TAG}.apk" --repo "$REPO" --clobber
 
 workflows:
   checks:
