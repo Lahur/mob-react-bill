@@ -59,7 +59,7 @@ export default function AccountsStatementNew() {
       await dispatch(
         createAccountsStatement({
           request: { amount: amountValue, description, date },
-          file: billUri ? { uri: billUri, name: billName ?? 'racun.pdf' } : null,
+          file: billUri ? { uri: billUri, name: billName ?? 'racun.pdf', type: 'application/pdf' } : null,
         }),
       ).unwrap();
       router.replace('/accounts-statements');

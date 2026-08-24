@@ -56,7 +56,7 @@ export default function AccountsStatementScan() {
         await dispatch(
           uploadAccountsStatementBill({
             id,
-            file: { uri: pdfFile.uri, name: 'racun.pdf' },
+            file: { uri: pdfFile.uri, name: 'racun.pdf', type: 'application/pdf' },
           }),
         ).unwrap();
         router.replace('/accounts-statements');
