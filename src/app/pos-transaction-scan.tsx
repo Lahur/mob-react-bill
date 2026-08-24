@@ -1,7 +1,8 @@
 import { Image } from "expo-image";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/themed-text";
 import { Spacing } from "@/constants/theme";
@@ -15,6 +16,7 @@ export default function PosTransactionScan() {
     const { id } = useLocalSearchParams<{ id?: string }>();
     const dispatch = useAppDispatch();
     const theme = useTheme();
+    const insets = useSafeAreaInsets();
 
     const [scannedImage, setScannedImage] = useState<string>();
     const [uploading, setUploading] = useState(false);
@@ -55,8 +57,21 @@ export default function PosTransactionScan() {
         }
     };
 
+    const containerPlatformStyle = Platform.select({
+        web: {
+            paddingTop: Spacing.six,
+            paddingBottom: Spacing.four,
+        },
+        default: {
+            paddingTop: insets.top + Spacing.four,
+            paddingLeft: insets.left + Spacing.four,
+            paddingRight: insets.right + Spacing.four,
+            paddingBottom: insets.bottom + Spacing.four,
+        },
+    });
+
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, containerPlatformStyle]}>
             <Image
                 contentFit="contain"
                 style={styles.image}
@@ -103,7 +118,6 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         gap: Spacing.three,
-        padding: Spacing.four,
     },
     image: {
         flex: 1,

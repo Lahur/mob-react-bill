@@ -1,6 +1,7 @@
 import { router, useLocalSearchParams } from 'expo-router';
 import { useState } from 'react';
-import { ActivityIndicator, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ActivityIndicator, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { DateField } from '@/components/date-field';
 import { ThemedText } from '@/components/themed-text';
@@ -21,6 +22,7 @@ export default function AccountsStatementNew() {
   const params = useLocalSearchParams<SearchParams>();
   const dispatch = useAppDispatch();
   const theme = useTheme();
+  const insets = useSafeAreaInsets();
 
   const [amount, setAmount] = useState(params.amount ?? '');
   const [description, setDescription] = useState(params.description ?? '');
@@ -70,8 +72,21 @@ export default function AccountsStatementNew() {
     }
   };
 
+  const containerPlatformStyle = Platform.select({
+    web: {
+      paddingTop: Spacing.six,
+      paddingBottom: Spacing.four,
+    },
+    default: {
+      paddingTop: insets.top + Spacing.four,
+      paddingLeft: insets.left + Spacing.four,
+      paddingRight: insets.right + Spacing.four,
+      paddingBottom: insets.bottom + Spacing.four,
+    },
+  });
+
   return (
-    <View style={[styles.container, { backgroundColor: theme.background }]}>
+    <View style={[styles.container, { backgroundColor: theme.background }, containerPlatformStyle]}>
       <ThemedText type="subtitle">Novi blagajnički izvještaj</ThemedText>
 
       <View style={styles.field}>
@@ -157,7 +172,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     gap: Spacing.four,
-    padding: Spacing.four,
   },
   field: {
     gap: Spacing.two,
