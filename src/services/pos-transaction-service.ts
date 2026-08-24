@@ -17,11 +17,8 @@ const PosTransactionService = {
     return response.data;
   },
 
-  async upload(id: string, file: UploadableFile): Promise<PosTransactionResponse> {
-    const formData = new FormData();
-    formData.append('file', new File(file.uri), file.name);
-    const response = await posTransactionApi.post<PosTransactionResponse>(`/${id}/upload`, formData);
-    return response.data;
+  upload(id: string, file: UploadableFile): Promise<PosTransactionResponse> {
+    return posTransactionApi.uploadFile<PosTransactionResponse>(`/${id}/upload`, new File(file.uri));
   },
 };
 

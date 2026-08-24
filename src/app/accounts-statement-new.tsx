@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react-native';
-import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { router, useLocalSearchParams } from 'expo-router';
+import { useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -12,9 +12,6 @@ import { useTheme } from '@/hooks/use-theme';
 import { useAppDispatch } from '@/store/hooks';
 
 type SearchParams = {
-  amount?: string;
-  description?: string;
-  date?: string;
   billUri?: string;
   billName?: string;
 };
@@ -25,9 +22,9 @@ export default function AccountsStatementNew() {
   const theme = useTheme();
   const insets = useSafeAreaInsets();
 
-  const [amount, setAmount] = useState(params.amount ?? '');
-  const [description, setDescription] = useState(params.description ?? '');
-  const [date, setDate] = useState(params.date ?? '');
+  const [amount, setAmount] = useState('');
+  const [description, setDescription] = useState('');
+  const [date, setDate] = useState('');
   const [errors, setErrors] = useState<{ amount?: boolean; description?: boolean; date?: boolean }>({});
   const [submitting, setSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string>();
@@ -35,20 +32,8 @@ export default function AccountsStatementNew() {
   const billUri = params.billUri;
   const billName = params.billName;
 
-  useFocusEffect(
-    useCallback(() => {
-      return () => {
-        setAmount('');
-        setDescription('');
-        setDate('');
-        setErrors({});
-        setSubmitError(undefined);
-      };
-    }, []),
-  );
-
   const handleScan = () => {
-    router.push({ pathname: '/accounts-statement-scan', params: { amount, description, date } });
+    router.push('/accounts-statement-scan');
   };
 
   const handleCancel = () => {

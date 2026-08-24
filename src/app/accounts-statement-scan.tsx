@@ -14,13 +14,10 @@ import { useAppDispatch } from '@/store/hooks';
 
 type SearchParams = {
   id?: string;
-  amount?: string;
-  description?: string;
-  date?: string;
 };
 
 export default function AccountsStatementScan() {
-  const { id, amount, description, date } = useLocalSearchParams<SearchParams>();
+  const { id } = useLocalSearchParams<SearchParams>();
   const dispatch = useAppDispatch();
   const theme = useTheme();
   const insets = useSafeAreaInsets();
@@ -38,7 +35,13 @@ export default function AccountsStatementScan() {
   );
 
   const handleCancel = () => {
-    router.replace(id ? '/accounts-statements' : { pathname: '/accounts-statement-new', params: { amount, description, date } });
+    if (id) {
+      router.replace('/accounts-statements');
+    } else {
+      // Pop back to the existing accounts-statement-new screen instead of replacing it, so its
+      // in-progress form state (which was never unmounted, just backgrounded) is preserved as-is.
+      router.back();
+    }
   };
 
   const handleConfirm = async () => {
@@ -58,9 +61,11 @@ export default function AccountsStatementScan() {
         ).unwrap();
         router.replace('/accounts-statements');
       } else {
-        router.replace({
+        // Pop back to the existing accounts-statement-new screen (rather than replacing it) and
+        // merge in the scanned file, so its already-live form state isn't lost or duplicated.
+        router.navigate({
           pathname: '/accounts-statement-new',
-          params: { amount, description, date, billUri: pdfFile.uri, billName: 'racun.pdf' },
+          params: { billUri: pdfFile.uri, billName: 'racun.pdf' },
         });
       }
     } catch (err) {

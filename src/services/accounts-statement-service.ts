@@ -14,19 +14,19 @@ const AccountsStatementService = {
     return response.data;
   },
 
-  async create(request: CreateAccountsStatementRequest, file: UploadableFile | null): Promise<AccountsStatementResponse> {
+  create(request: CreateAccountsStatementRequest, file: UploadableFile | null): Promise<AccountsStatementResponse> {
+    if (file) {
+      return accountsStatementApi.uploadFile<AccountsStatementResponse>('', new File(file.uri), {
+        request: JSON.stringify(request),
+      });
+    }
     const formData = new FormData();
     formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
-    if (file) formData.append('file', new File(file.uri), file.name);
-    const response = await accountsStatementApi.post<AccountsStatementResponse>('', formData);
-    return response.data;
+    return accountsStatementApi.post<AccountsStatementResponse>('', formData).then((response) => response.data);
   },
 
-  async upload(id: string, file: UploadableFile): Promise<AccountsStatementResponse> {
-    const formData = new FormData();
-    formData.append('file', new File(file.uri), file.name);
-    const response = await accountsStatementApi.post<AccountsStatementResponse>(`/${id}/upload`, formData);
-    return response.data;
+  upload(id: string, file: UploadableFile): Promise<AccountsStatementResponse> {
+    return accountsStatementApi.uploadFile<AccountsStatementResponse>(`/${id}/upload`, new File(file.uri));
   },
 };
 
