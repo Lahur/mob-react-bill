@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import { SymbolView } from 'expo-symbols';
@@ -15,7 +16,11 @@ import { useTheme } from '@/hooks/use-theme';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function TabLayout() {
+Sentry.init({
+  dsn: 'https://991345e6c40d88f337a9242e3622a21a@o4511728439197696.ingest.de.sentry.io/4511967295504464',
+});
+
+function TabLayout() {
   const colorScheme = useColorScheme();
   const theme = useTheme();
   return (
@@ -84,3 +89,5 @@ export default function TabLayout() {
     </KeycloakAuthProvider>
   );
 }
+
+export default Sentry.wrap(TabLayout);

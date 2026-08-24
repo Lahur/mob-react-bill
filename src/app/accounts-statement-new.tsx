@@ -1,5 +1,5 @@
-import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -33,6 +33,18 @@ export default function AccountsStatementNew() {
 
   const billUri = params.billUri;
   const billName = params.billName;
+
+  useFocusEffect(
+    useCallback(() => {
+      return () => {
+        setAmount('');
+        setDescription('');
+        setDate('');
+        setErrors({});
+        setSubmitError(undefined);
+      };
+    }, []),
+  );
 
   const handleScan = () => {
     router.push({ pathname: '/accounts-statement-scan', params: { amount, description, date } });

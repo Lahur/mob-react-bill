@@ -43,7 +43,15 @@
       "expo-web-browser",
       "expo-secure-store",
       "./plugins/with-gradle-java-home.js",
-      "@react-native-community/datetimepicker"
+      "@react-native-community/datetimepicker",
+      [
+        "@sentry/react-native/expo",
+        {
+          "url": "https://sentry.io/",
+          "project": "mob-react-bill",
+          "organization": "tehnomodus-doo"
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
