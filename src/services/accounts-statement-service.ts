@@ -14,7 +14,9 @@ const AccountsStatementService = {
 
   async create(request: CreateAccountsStatementRequest, file: UploadableFile | null): Promise<AccountsStatementResponse> {
     const formData = new FormData();
-    formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
+    // React Native's FormData can't send a real Blob part (its own-enumerable props
+    // don't survive the internal spread), so pass a { string, type } part instead.
+    formData.append('request', { string: JSON.stringify(request), type: 'application/json' } as unknown as Blob);
     if (file) formData.append('file', file as unknown as Blob);
     const response = await accountsStatementApi.post<AccountsStatementResponse>('', formData);
     return response.data;
