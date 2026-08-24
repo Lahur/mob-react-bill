@@ -1,3 +1,5 @@
+import { File } from 'expo-file-system';
+
 import type { AccountsStatementResponse } from '@/models/dto/accounts-statement-response';
 import type { CreateAccountsStatementRequest } from '@/models/dto/create-accounts-statement-request';
 
@@ -14,17 +16,15 @@ const AccountsStatementService = {
 
   async create(request: CreateAccountsStatementRequest, file: UploadableFile | null): Promise<AccountsStatementResponse> {
     const formData = new FormData();
-    // React Native's FormData can't send a real Blob part (its own-enumerable props
-    // don't survive the internal spread), so pass a { string, type } part instead.
-    formData.append('request', { string: JSON.stringify(request), type: 'application/json' } as unknown as Blob);
-    if (file) formData.append('file', file as unknown as Blob);
+    formData.append('request', new Blob([JSON.stringify(request)], { type: 'application/json' }));
+    if (file) formData.append('file', new File(file.uri), file.name);
     const response = await accountsStatementApi.post<AccountsStatementResponse>('', formData);
     return response.data;
   },
 
   async upload(id: string, file: UploadableFile): Promise<AccountsStatementResponse> {
     const formData = new FormData();
-    formData.append('file', file as unknown as Blob);
+    formData.append('file', new File(file.uri), file.name);
     const response = await accountsStatementApi.post<AccountsStatementResponse>(`/${id}/upload`, formData);
     return response.data;
   },

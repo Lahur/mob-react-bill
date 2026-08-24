@@ -46,7 +46,7 @@ export default function PosTransactionScan() {
             await dispatch(
                 uploadPosTransactionBill({
                     id,
-                    file: { uri: pdfFile.uri, name: 'receipt.pdf', type: 'application/pdf' },
+                    file: { uri: pdfFile.uri, name: 'receipt.pdf' },
                 }),
             ).unwrap();
             router.replace('/pos-transactions');
