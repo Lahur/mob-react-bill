@@ -34,7 +34,7 @@ jobs:
       - run:
           name: Build with EAS
           command: npx eas-cli@latest build --platform android --profile production --non-interactive --wait --json > eas-build.json
-          no_output_timeout: 30m
+          no_output_timeout: 4h
       - run:
           name: Download AAB
           command: |
