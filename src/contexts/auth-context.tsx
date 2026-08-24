@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
+import * as Sentry from '@sentry/react-native';
 import * as AuthSession from 'expo-auth-session';
 import * as WebBrowser from 'expo-web-browser';
 
@@ -106,6 +107,7 @@ export function KeycloakAuthProvider({ children }: { children: ReactNode }) {
         setError((result.error as Error | null | undefined)?.message ?? 'Autentifikacija nije uspjela');
       }
     } catch (err) {
+      Sentry.captureException(err);
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setIsLoading(false);

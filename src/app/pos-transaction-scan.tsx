@@ -1,3 +1,4 @@
+import * as Sentry from "@sentry/react-native";
 import { Image } from "expo-image";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
@@ -51,6 +52,7 @@ export default function PosTransactionScan() {
             router.replace('/pos-transactions');
         } catch (err) {
             console.error('Failed to upload POS transaction bill', err);
+            Sentry.captureException(err);
             setError('Otpremanje nije uspjelo. Pokušajte ponovno.');
         } finally {
             setUploading(false);

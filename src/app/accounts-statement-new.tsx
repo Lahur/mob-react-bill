@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
@@ -77,7 +78,8 @@ export default function AccountsStatementNew() {
         }),
       ).unwrap();
       router.replace('/accounts-statements');
-    } catch {
+    } catch (err) {
+      Sentry.captureException(err);
       setSubmitError('Izrada izvještaja nije uspjela. Pokušajte ponovno.');
     } finally {
       setSubmitting(false);

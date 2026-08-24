@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/react-native';
 import { Image } from 'expo-image';
 import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
 import { useCallback, useState } from 'react';
@@ -64,6 +65,7 @@ export default function AccountsStatementScan() {
       }
     } catch (err) {
       console.error('Failed to process accounts statement bill scan', err);
+      Sentry.captureException(err);
       setError('Obrada skeniranog računa nije uspjela. Pokušajte ponovno.');
     } finally {
       setUploading(false);
