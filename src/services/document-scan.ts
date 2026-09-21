@@ -9,7 +9,7 @@ const toFileUri = (path: string) => (path.startsWith('file://') || path.startsWi
 const SCAN_TARGET_WIDTH = 2480;
 
 export async function scanDocument(): Promise<string | undefined> {
-  const { scannedImages } = await DocumentScanner.scanDocument({ croppedImageQuality: 70 });
+  const { scannedImages } = await DocumentScanner.scanDocument({ croppedImageQuality: 70, maxNumDocuments: 1 });
   return scannedImages?.[0];
 }
 

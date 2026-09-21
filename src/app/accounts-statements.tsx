@@ -61,7 +61,9 @@ export default function AccountsStatements() {
           <ThemedText type="subtitle" style={styles.headerTitle}>
             Blagajnički izvještaji
           </ThemedText>
-          <TouchableOpacity onPress={() => router.push('/accounts-statement-new')} hitSlop={Spacing.two}>
+          <TouchableOpacity
+            onPress={() => router.push({ pathname: '/accounts-statement-new', params: { refresh: true } })}
+            hitSlop={Spacing.two}>
             <SymbolView name={{ ios: 'plus.circle', android: 'add_circle', web: 'add_circle' }} tintColor={theme.text} size={24} />
           </TouchableOpacity>
         </ThemedView>

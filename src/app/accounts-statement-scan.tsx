@@ -26,23 +26,31 @@ export default function AccountsStatementScan() {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState<string>();
 
-  useFocusEffect(
-    useCallback(() => {
-      setScannedImage(undefined);
-      setError(undefined);
-      scanDocument().then(setScannedImage);
-    }, []),
-  );
-
   const handleCancel = () => {
     if (id) {
       router.replace('/accounts-statements');
     } else {
-      // Pop back to the existing accounts-statement-new screen instead of replacing it, so its
-      // in-progress form state (which was never unmounted, just backgrounded) is preserved as-is.
-      router.back();
+      // Navigate (not replace) to the existing accounts-statement-new screen instance instead of
+      // router.back(), which isn't reliable in this Drawer (no push-style history stack) and can
+      // land on the initial route instead. navigate() reuses the already-mounted screen, so its
+      // in-progress form state is preserved as-is.
+      router.navigate('/accounts-statement-new');
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      setScannedImage(undefined);
+      setError(undefined);
+      scanDocument().then((image) => {
+        if (!image) {
+          handleCancel();
+          return;
+        }
+        setScannedImage(image);
+      });
+    }, []),
+  );
 
   const handleConfirm = async () => {
     if (!scannedImage) return;

@@ -2,7 +2,7 @@ import * as Sentry from "@sentry/react-native";
 import { Image } from "expo-image";
 import { router, useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useCallback, useState } from "react";
-import { ActivityIndicator, Platform, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, BackHandler, Platform, StyleSheet, TouchableOpacity, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 import { ThemedText } from "@/components/themed-text";
@@ -23,17 +23,31 @@ export default function PosTransactionScan() {
     const [uploading, setUploading] = useState(false);
     const [error, setError] = useState<string>();
 
+    const handleCancel = () => {
+        router.replace('/pos-transactions');
+    };
+
     useFocusEffect(
         useCallback(() => {
             setScannedImage(undefined);
             setError(undefined);
-            scanDocument().then(setScannedImage);
+            scanDocument().then((image) => {
+                if (!image) {
+                    handleCancel();
+                    return;
+                }
+                setScannedImage(image);
+            });
         }, []),
     );
 
-    const handleCancel = () => {
-        router.replace('/pos-transactions');
-    };
+    // Android hardware back would otherwise skip the Cancel button and bail mid-upload.
+    useFocusEffect(
+        useCallback(() => {
+            const subscription = BackHandler.addEventListener('hardwareBackPress', () => true);
+            return () => subscription.remove();
+        }, []),
+    );
 
     const handleUpload = async () => {
         if (!scannedImage || !id) return;

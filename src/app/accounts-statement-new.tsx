@@ -1,6 +1,6 @@
 import * as Sentry from '@sentry/react-native';
-import { router, useLocalSearchParams } from 'expo-router';
-import { useState } from 'react';
+import { router, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
@@ -14,6 +14,7 @@ import { useAppDispatch } from '@/store/hooks';
 type SearchParams = {
   billUri?: string;
   billName?: string;
+  refresh?: string;
 };
 
 export default function AccountsStatementNew() {
@@ -31,6 +32,21 @@ export default function AccountsStatementNew() {
 
   const billUri = params.billUri;
   const billName = params.billName;
+
+  useFocusEffect(
+    useCallback(() => {
+      if (params.refresh !== 'true') return;
+
+      setAmount('');
+      setDescription('');
+      setDate('');
+      setErrors({});
+      setSubmitError(undefined);
+      // Consume the flag (and drop any leftover scanned bill from a previous visit) so navigating
+      // back here later (e.g. after a scan) doesn't wipe the form again.
+      router.setParams({ refresh: undefined, billUri: undefined, billName: undefined });
+    }, [params.refresh]),
+  );
 
   const handleScan = () => {
     router.push('/accounts-statement-scan');
